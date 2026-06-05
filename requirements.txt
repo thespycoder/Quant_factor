@@ -1,0 +1,29 @@
+# Data layer
+yfinance
+sec-edgar-downloader
+pandas
+pyarrow
+requests
+
+# Backtesting & stats
+numpy
+scipy
+statsmodels
+
+# LLM agents & orchestration
+langchain
+langgraph
+langchain-groq
+pydantic
+tenacity
+
+# Deduplication
+chromadb
+
+# Dashboard
+streamlit
+plotly
+matplotlib
+
+# Config
+python-dotenv

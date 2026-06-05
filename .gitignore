@@ -1,0 +1,57 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual environments
+venv/
+.venv/
+env/
+.env/
+
+# Environment / secrets
+.env
+*keys*.txt
+*secrets*.txt
+
+# Data folder contents (keep .gitkeep markers)
+data/raw_filings/*
+data/prices/*
+!data/raw_filings/.gitkeep
+!data/prices/.gitkeep
+
+# Binary / columnar data files
+*.parquet
+*.db
+*.sqlite
+*.sqlite3
+
+# Chroma vector store
+chroma/
+chroma_db/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Pytest / coverage
+.pytest_cache/
+.coverage
+htmlcov/
