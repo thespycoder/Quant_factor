@@ -19,7 +19,9 @@
 <!-- Information Coefficient (IC), IC t-test, Fama-French 3-factor alpha regression (statsmodels). -->
 
 ## Limitations
-<!-- Survivorship bias in universe construction; look-ahead bias risk in filing date alignment; single-country (US) coverage. -->
+
+**Survivorship bias.** The universe is sampled from the current S&P 500 constituent list and applied across 2015–2024. Companies that left the index during this period (via delisting, acquisition, or removal) are excluded, which biases results upward by omitting underperformers. A full correction requires point-in-time index-membership data, which is out of scope for this project. Reported factor performance should therefore be read as an upper bound, not a tradeable estimate.
 
 ## How to Run
 <!-- `streamlit run dashboard/app.py` — or run individual pipeline stages via the CLI entry points in each package. -->
+

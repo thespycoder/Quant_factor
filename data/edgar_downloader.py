@@ -24,6 +24,7 @@ import pandas as pd
 # `python data/edgar_downloader.py` or imported from the project root.
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from config.settings import SEC_EDGAR_USER_AGENT
+from config.universe import get_universe
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -224,15 +225,17 @@ def save_index(df: pd.DataFrame) -> None:
 # ---------------------------------------------------------------------------
 
 def run(
-    tickers: list[str]    = TICKERS,
+    tickers: list[str] | None    = None,
     form_types: list[str] | None = None,
-    start_year: int       = 2015,
-    end_year: int         = 2024,
+    start_year: int              = 2015,
+    end_year: int                = 2024,
 ) -> pd.DataFrame:
     """
     Download all matching filings for every ticker and return the
     complete (updated) metadata index as a DataFrame.
     """
+    if tickers is None:
+        tickers = get_universe()
     if form_types is None:
         form_types = ["10-K"]
 
@@ -276,7 +279,7 @@ def run(
 # ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    df = run(tickers=TICKERS, form_types=["10-K"], start_year=2015, end_year=2024)
+    df = run(form_types=["10-K"], start_year=2015, end_year=2024)
     divider = "─" * 62
     print(f"\n{divider}")
     print(f"Done.  {len(df)} total filing(s) in index.\n")

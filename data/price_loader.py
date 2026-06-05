@@ -13,10 +13,15 @@ Why adjusted close?
 from __future__ import annotations
 
 import logging
+import sys
 from pathlib import Path
 
 import pandas as pd
 import yfinance as yf
+
+# Allow `from config.universe import …` when run as `python data/price_loader.py`
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from config.universe import get_universe
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -136,9 +141,9 @@ def _add_returns(df: pd.DataFrame) -> pd.DataFrame:
 # ---------------------------------------------------------------------------
 
 def run(
-    tickers: list[str] = TICKERS,
-    start: str         = DEFAULT_START,
-    end: str           = DEFAULT_END,
+    tickers: list[str] | None = None,
+    start: str                = DEFAULT_START,
+    end: str                  = DEFAULT_END,
 ) -> pd.DataFrame:
     """
     Download prices for all tickers, merge with the on-disk cache,
@@ -149,6 +154,8 @@ def run(
 
     Returns the complete panel DataFrame.
     """
+    if tickers is None:
+        tickers = get_universe()
     PRICES_DIR.mkdir(parents=True, exist_ok=True)
     cache = _load_cache()
 
@@ -202,7 +209,7 @@ def run(
 # ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    df = run(tickers=TICKERS, start=DEFAULT_START, end=DEFAULT_END)
+    df = run(start=DEFAULT_START, end=DEFAULT_END)
 
     divider = "─" * 52
     print(f"\n{divider}")
