@@ -25,3 +25,5 @@
 ## How to Run
 <!-- `streamlit run dashboard/app.py` — or run individual pipeline stages via the CLI entry points in each package. -->
 
+## Eligibility
+At each ranking date, a stock is included only if it has ≥252 trading days of prior price history and a filing no older than 12 months (using filing date, not period date, to prevent lookahead). Factors are evaluated only over eligible names.
