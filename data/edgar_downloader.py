@@ -47,6 +47,24 @@ _INDEX_COLS = [
     "report_date", "accession_number", "primary_document_url",
 ]
 
+# Known ticker aliases: company has multiple share classes or has been renamed,
+# and SEC's company_tickers.json may only carry one of them.
+# Values are tried left-to-right when the primary key is not found.
+_TICKER_ALTERNATES: dict[str, list[str]] = {
+    # Alphabet — Class A and Class C share a single CIK; SEC often indexes GOOG
+    "GOOGL": ["GOOG"],
+    "GOOG":  ["GOOGL"],
+    # Berkshire Hathaway share classes
+    "BRK-A": ["BRK-B"],
+    "BRK-B": ["BRK-A"],
+    # Brown-Forman share classes
+    "BF-B":  ["BF-A"],
+    "BF-A":  ["BF-B"],
+    # Fox Corporation share classes
+    "FOXA":  ["FOX"],
+    "FOX":   ["FOXA"],
+}
+
 # ---------------------------------------------------------------------------
 # Logging
 # ---------------------------------------------------------------------------
@@ -89,6 +107,46 @@ def build_ticker_cik_map() -> dict[str, str]:
         entry["ticker"].upper(): str(entry["cik_str"]).zfill(10)
         for entry in data.values()
     }
+
+
+def resolve_cik(
+    ticker: str,
+    ticker_cik: dict[str, str],
+) -> tuple[str | None, str]:
+    """
+    Resolve *ticker* to its zero-padded CIK, trying known alternates when the
+    primary lookup fails (e.g. GOOGL → GOOG).
+
+    Returns
+    -------
+    (cik, resolved_ticker)
+        cik is None when the ticker (and all alternates) are absent from the
+        SEC database — likely delisted, not yet registered, or a bad symbol.
+        resolved_ticker is the symbol that actually produced a hit (useful for
+        logging); equals *ticker* when the direct lookup succeeded.
+    """
+    t = ticker.upper()
+
+    cik = ticker_cik.get(t)
+    if cik:
+        return cik, t
+
+    for alt in _TICKER_ALTERNATES.get(t, []):
+        cik = ticker_cik.get(alt.upper())
+        if cik:
+            log.info(
+                "  %s not in SEC ticker file — resolved via alternate %s (CIK %s)",
+                t, alt, cik,
+            )
+            return cik, alt.upper()
+
+    tried = ", ".join([t] + _TICKER_ALTERNATES.get(t, []))
+    log.warning(
+        "Cannot resolve CIK for %s (tried: %s). "
+        "Likely delisted, not yet in EDGAR, or filed under a different name. Skipping.",
+        t, tried,
+    )
+    return None, t
 
 
 # ---------------------------------------------------------------------------
@@ -239,19 +297,24 @@ def run(
     if form_types is None:
         form_types = ["10-K"]
 
-    ticker_cik       = build_ticker_cik_map()
-    index_df         = load_index()
-    known_accessions = set(index_df["accession_number"].tolist())
+    ticker_cik = build_ticker_cik_map()
+    index_df   = load_index()
+    # Track (accession, ticker) pairs — not just accessions — so that
+    # dual-class shares (GOOGL / GOOG) sharing one CIK each get their own
+    # rows in the index without cross-contamination.
+    known: set[tuple[str, str]] = set(
+        zip(index_df["accession_number"], index_df["ticker"])
+    )
     new_rows: list[dict] = []
 
     for ticker in tickers:
         ticker = ticker.upper()
-        cik = ticker_cik.get(ticker)
+        cik, resolved = resolve_cik(ticker, ticker_cik)
         if not cik:
-            log.warning("No CIK found for %s — skipping", ticker)
-            continue
+            continue  # warning already logged by resolve_cik
 
-        log.info("── %s  (CIK %s)", ticker, cik)
+        label = f"{ticker} (via {resolved})" if resolved != ticker else ticker
+        log.info("── %s  (CIK %s)", label, cik)
         try:
             records = get_filing_records(cik, form_types, start_year, end_year)
         except Exception as exc:
@@ -262,9 +325,10 @@ def run(
 
         for rec in records:
             download_filing(ticker, rec)
-            if rec["accession_number"] not in known_accessions:
+            key = (rec["accession_number"], ticker)
+            if key not in known:
                 new_rows.append({"ticker": ticker, **rec})
-                known_accessions.add(rec["accession_number"])
+                known.add(key)
 
     if new_rows:
         new_df   = pd.DataFrame(new_rows)[_INDEX_COLS]
@@ -279,13 +343,29 @@ def run(
 # ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    df = run(form_types=["10-K"], start_year=2015, end_year=2024)
-    divider = "─" * 62
+    import io, sys as _sys
+    # Ensure the summary table prints cleanly on Windows terminals
+    if hasattr(_sys.stdout, "reconfigure"):
+        _sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+
+    # Targeted re-run for previously-failing tickers.
+    # The existing cache means all other tickers are untouched.
+    RECHECK = ["GOOGL", "GEV", "PSKY", "SNDK"]
+
+    df = run(tickers=RECHECK, form_types=["10-K"], start_year=2015, end_year=2024)
+
+    divider = "-" * 62
     print(f"\n{divider}")
-    print(f"Done.  {len(df)} total filing(s) in index.\n")
-    if not df.empty:
+    subset = df[df["ticker"].isin(RECHECK)]
+    succeeded = sorted(subset["ticker"].unique().tolist())
+    failed    = sorted(set(RECHECK) - set(succeeded))
+    print(f"Re-check results for: {', '.join(RECHECK)}")
+    print(f"  Succeeded ({len(succeeded)}): {', '.join(succeeded) or 'none'}")
+    print(f"  No filings ({len(failed)}):  {', '.join(failed)  or 'none'}")
+    if not subset.empty:
+        print()
         print(
-            df[["ticker", "form_type", "filing_date", "report_date"]]
+            subset[["ticker", "form_type", "filing_date", "report_date"]]
             .sort_values(["ticker", "filing_date"])
             .to_string(index=False)
         )

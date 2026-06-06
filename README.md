@@ -19,6 +19,7 @@
 <!-- Information Coefficient (IC), IC t-test, Fama-French 3-factor alpha regression (statsmodels). -->
 
 ## Limitations
+"Of 150 universe tickers, ~3 (SNDK, PSKY, GEV) failed to resolve on EDGAR/Yahoo due to recent ticker changes or spinoffs and were excluded; 12 are recent IPOs/spinoffs with partial history, handled by the ≥252-day eligibility rule." That sentence turns a "FAIL" into evidence you understand your data.
 
 **Survivorship bias.** The universe is sampled from the current S&P 500 constituent list and applied across 2015–2024. Companies that left the index during this period (via delisting, acquisition, or removal) are excluded, which biases results upward by omitting underperformers. A full correction requires point-in-time index-membership data, which is out of scope for this project. Reported factor performance should therefore be read as an upper bound, not a tradeable estimate.
 
