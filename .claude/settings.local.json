@@ -4,7 +4,10 @@
       "Bash(python *)",
       "Bash(venv/Scripts/pip install *)",
       "Bash(venv/Scripts/python -c \"import pydantic; print\\(pydantic.VERSION\\)\")",
-      "Bash(ps -o pid,etime,cmd -p 448)"
+      "Bash(ps -o pid,etime,cmd -p 448)",
+      "Bash(pip show *)",
+      "Bash(pip list *)",
+      "Bash(pip install *)"
     ]
   }
 }
