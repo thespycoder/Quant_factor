@@ -1,0 +1,209 @@
+{
+  "coverage": {
+    "form_type": "10-K",
+    "n_filings": 1435,
+    "n_tickers": 151,
+    "date_min": "2015-01-23",
+    "date_max": "2024-11-27"
+  },
+  "lm_categories": {
+    "LM_negative": {
+      "n": 1435,
+      "mean": 0.00361,
+      "std": 0.00299,
+      "min": 0.00064,
+      "p25": 0.00225,
+      "median": 0.00302,
+      "p75": 0.00402,
+      "max": 0.03321
+    },
+    "LM_positive": {
+      "n": 1435,
+      "mean": 0.00097,
+      "std": 0.00046,
+      "min": 0.00015,
+      "p25": 0.00065,
+      "median": 0.00091,
+      "p75": 0.0012,
+      "max": 0.00446
+    },
+    "LM_uncertainty": {
+      "n": 1435,
+      "mean": 0.00596,
+      "std": 0.00455,
+      "min": 0.0003,
+      "p25": 0.00221,
+      "median": 0.00355,
+      "p75": 0.00943,
+      "max": 0.02054
+    },
+    "LM_litigious": {
+      "n": 1435,
+      "mean": 0.00139,
+      "std": 0.00079,
+      "min": 0.00013,
+      "p25": 0.00087,
+      "median": 0.00123,
+      "p75": 0.00172,
+      "max": 0.00847
+    }
+  },
+  "phrases": {
+    "risk": {
+      "n": 1435,
+      "mean": 0.00016,
+      "std": 0.00013,
+      "min": 2e-05,
+      "p25": 9e-05,
+      "median": 0.00012,
+      "p75": 0.00018,
+      "max": 0.00104
+    },
+    "litigation": {
+      "n": 1435,
+      "mean": 4e-05,
+      "std": 4e-05,
+      "min": 0.0,
+      "p25": 2e-05,
+      "median": 3e-05,
+      "p75": 5e-05,
+      "max": 0.00052
+    },
+    "supply chain": {
+      "n": 1435,
+      "mean": 2e-05,
+      "std": 3e-05,
+      "min": 0.0,
+      "p25": 0.0,
+      "median": 1e-05,
+      "p75": 2e-05,
+      "max": 0.00022
+    },
+    "going concern": {
+      "n": 1435,
+      "mean": 0.0,
+      "std": 0.0,
+      "min": 0.0,
+      "p25": 0.0,
+      "median": 0.0,
+      "p75": 0.0,
+      "max": 3e-05
+    },
+    "restructuring": {
+      "n": 1435,
+      "mean": 3e-05,
+      "std": 6e-05,
+      "min": 0.0,
+      "p25": 0.0,
+      "median": 1e-05,
+      "p75": 5e-05,
+      "max": 0.00047
+    },
+    "impairment": {
+      "n": 1435,
+      "mean": 9e-05,
+      "std": 7e-05,
+      "min": 0.0,
+      "p25": 4e-05,
+      "median": 7e-05,
+      "p75": 0.00012,
+      "max": 0.00042
+    },
+    "competition": {
+      "n": 1435,
+      "mean": 3e-05,
+      "std": 2e-05,
+      "min": 0.0,
+      "p25": 1e-05,
+      "median": 2e-05,
+      "p75": 4e-05,
+      "max": 0.00019
+    },
+    "regulation": {
+      "n": 1435,
+      "mean": 3e-05,
+      "std": 3e-05,
+      "min": 0.0,
+      "p25": 1e-05,
+      "median": 3e-05,
+      "p75": 4e-05,
+      "max": 0.00043
+    },
+    "uncertainty": {
+      "n": 1435,
+      "mean": 1e-05,
+      "std": 1e-05,
+      "min": 0.0,
+      "p25": 1e-05,
+      "median": 1e-05,
+      "p75": 2e-05,
+      "max": 0.00019
+    },
+    "decline": {
+      "n": 1435,
+      "mean": 2e-05,
+      "std": 2e-05,
+      "min": 0.0,
+      "p25": 1e-05,
+      "median": 1e-05,
+      "p75": 2e-05,
+      "max": 0.00012
+    },
+    "growth": {
+      "n": 1435,
+      "mean": 9e-05,
+      "std": 7e-05,
+      "min": 0.0,
+      "p25": 4e-05,
+      "median": 7e-05,
+      "p75": 0.00012,
+      "max": 0.00051
+    }
+  },
+  "sector_LM_uncertainty": {
+    "Communication Services": {
+      "n": 54,
+      "mean": 0.00585
+    },
+    "Consumer Discretionary": {
+      "n": 134,
+      "mean": 0.00621
+    },
+    "Consumer Staples": {
+      "n": 110,
+      "mean": 0.00586
+    },
+    "Energy": {
+      "n": 50,
+      "mean": 0.00726
+    },
+    "Financials": {
+      "n": 229,
+      "mean": 0.00562
+    },
+    "Health Care": {
+      "n": 176,
+      "mean": 0.00632
+    },
+    "Industrials": {
+      "n": 208,
+      "mean": 0.00517
+    },
+    "Information Technology": {
+      "n": 193,
+      "mean": 0.00632
+    },
+    "Materials": {
+      "n": 72,
+      "mean": 0.00644
+    },
+    "Real Estate": {
+      "n": 90,
+      "mean": 0.00723
+    },
+    "Utilities": {
+      "n": 79,
+      "mean": 0.00467
+    }
+  }
+}
