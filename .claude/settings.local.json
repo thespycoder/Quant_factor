@@ -7,7 +7,14 @@
       "Bash(ps -o pid,etime,cmd -p 448)",
       "Bash(pip show *)",
       "Bash(pip list *)",
-      "Bash(pip install *)"
+      "Bash(pip install *)",
+      "Bash(sed -n '70,135p' backtest/ic_engine.py)",
+      "Bash(sed -n '110,200p' backtest/portfolio_engine.py)",
+      "Bash(sed -n '63,135p' validation/ic_significance.py)",
+      "Bash(sed -n '244,300p' validation/ic_significance.py)",
+      "Bash(sed -n '189,260p' validation/factor_decay.py)",
+      "Bash(sed -n '133,200p' validation/ic_significance.py)",
+      "Bash(sed -n '78,145p' validation/factor_decay.py)"
     ]
   }
 }
