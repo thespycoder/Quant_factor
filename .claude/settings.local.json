@@ -14,7 +14,9 @@
       "Bash(sed -n '244,300p' validation/ic_significance.py)",
       "Bash(sed -n '189,260p' validation/factor_decay.py)",
       "Bash(sed -n '133,200p' validation/ic_significance.py)",
-      "Bash(sed -n '78,145p' validation/factor_decay.py)"
+      "Bash(sed -n '78,145p' validation/factor_decay.py)",
+      "Bash(rm -rf _chroma_test_tmp)",
+      "Bash(ls factor_library)"
     ]
   }
 }
