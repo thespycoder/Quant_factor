@@ -37,6 +37,10 @@ data/prices/*
 chroma/
 chroma_db/
 
+# Factor library data (generated — index .parquet covered above)
+factor_library/records/
+factor_library/memos/
+
 # Jupyter
 .ipynb_checkpoints/
 *.ipynb
