@@ -22,7 +22,10 @@
       "Bash(powershell *)",
       "Read(//tmp/**)",
       "Bash(python orchestration/research_graph.py)",
-      "Bash(echo \"started, pid $!\")"
+      "Bash(echo \"started, pid $!\")",
+      "Bash(curl -s http://localhost:8765)",
+      "Bash(pkill -f \"streamlit run dashboard/app.py\")",
+      "Bash(pkill -f \"streamlit.web.cli\")"
     ]
   }
 }
