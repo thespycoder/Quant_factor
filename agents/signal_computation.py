@@ -216,7 +216,13 @@ def load_filing_tokens(force_refresh: bool = False) -> dict[tuple[str, str], dic
     Load the preprocessed per-filing token cache.
 
     Returns ``{(ticker, accession_number): record}`` where each record is
-    ``{"total_word_count": int, "word_freq": dict[str,int], "bigram_freq": dict[str,int]}``.
+    ``{"total_word_count": int, "word_freq": dict[str,int]}``.
+
+    Deliberately does NOT load ``bigram_freq`` into memory: at full-corpus
+    scale (1,435+ filings) materialising a Python dict of bigram counts per
+    filing exhausts available RAM (MemoryError). The bigram parquet columns
+    stay on disk untouched — multi-word phrases are resolved via a raw-text
+    fallback instead (see ``_phrase_count_from_cache``).
 
     Raises FileNotFoundError with build instructions if the cache is missing.
     """
@@ -233,17 +239,17 @@ def load_filing_tokens(force_refresh: bool = False) -> dict[tuple[str, str], dic
     # The cache is a directory of batched part-files (see preprocess_filings.py);
     # pd.read_parquet transparently reads and concatenates all of them.
     log.info("Loading filing-token cache from %s ...", TOKENS_CACHE_PATH.name)
-    df = pd.read_parquet(TOKENS_CACHE_PATH)
+    df = pd.read_parquet(TOKENS_CACHE_PATH, columns=["ticker", "accession_number",
+                                                      "total_word_count", "word_freq"])
     cache = {
         (row.ticker, row.accession_number): {
             "total_word_count": int(row.total_word_count),
             "word_freq":        dict(row.word_freq),
-            "bigram_freq":      dict(row.bigram_freq),
         }
         for row in df.itertuples(index=False)
     }
     _filing_tokens_cache = cache
-    log.info("  %d filings cached", len(cache))
+    log.info("  %d filings cached  (word_freq only — bigram_freq stays on disk, not loaded)", len(cache))
     return cache
 
 
@@ -254,27 +260,26 @@ def load_filing_tokens(force_refresh: bool = False) -> dict[tuple[str, str], dic
 def _phrase_count_from_cache(
     phrase:           str,
     word_freq:        dict[str, int],
-    bigram_freq:      dict[str, int],
     ticker:           str | None = None,
     accession_number: str | None = None,
 ) -> float:
     """
-    Count occurrences of *phrase* (already lowercased) using cached
-    token/bigram frequencies.
+    Count occurrences of *phrase* (already lowercased).
 
-      * single word   → exact lookup in the word-frequency dict.
-      * two words     → exact lookup in the adjacent-bigram dict
-                        (covers phrases like "going concern").
-      * three+ words  → can't be resolved from unigram/bigram frequencies;
-                        fall back to a direct substring scan of the raw
-                        filing text (rare — most phrase hypotheses are
-                        one or two words).
+      * single word   → exact lookup in the in-memory word-frequency dict
+                        (fast — this is the common case).
+      * two+ words    → the bigram cache is NOT kept in memory (too large at
+                        full-corpus scale — see ``load_filing_tokens``), so
+                        multi-word phrases fall back to a direct substring
+                        scan of the raw filing text. Slower, but correct, and
+                        rare enough (most phrase hypotheses are one word) that
+                        per-hypothesis cost stays acceptable — the caller logs
+                        once per hypothesis when this path is taken (see
+                        ``compute_signal_df``), not per filing.
     """
     words = phrase.split()
     if len(words) == 1:
         return float(word_freq.get(words[0], 0))
-    if len(words) == 2:
-        return float(bigram_freq.get(phrase, 0))
 
     if ticker is None or accession_number is None:
         return 0.0
@@ -298,15 +303,16 @@ def compute_signal_for_filing(
     Parameters
     ----------
     tokens : the cached record for this filing —
-        ``{"total_word_count": int, "word_freq": dict, "bigram_freq": dict}``.
-    ticker, accession_number : only used as a fallback for phrase terms with
-        three or more words, which cannot be resolved from unigram/bigram
-        frequencies alone (rare).
+        ``{"total_word_count": int, "word_freq": dict}``.
+    ticker, accession_number : only used as a raw-text fallback for multi-word
+        phrase terms, which cannot be resolved from the in-memory unigram
+        word-frequency cache alone (the bigram cache is not kept in memory).
 
     Steps
     -----
     1. For each term in the spec:
-         phrase      → look up the (bi)gram count in the cached frequencies.
+         phrase      → single word: cached word-frequency lookup; multi-word:
+                       raw-text substring scan (see _phrase_count_from_cache).
          lm_category → sum cached word frequencies over the LM word set.
     2. Combine counts per the spec's 'combine' rule.
     3. Optionally normalise by total token count (normalize_by_length).
@@ -319,8 +325,7 @@ def compute_signal_for_filing(
     if n_tokens < _MIN_TOKENS:
         return float("nan")
 
-    word_freq   = tokens["word_freq"]
-    bigram_freq = tokens["bigram_freq"]
+    word_freq = tokens["word_freq"]
 
     # Lazy-load LM words only when actually needed
     if lm_words is None:
@@ -339,7 +344,7 @@ def compute_signal_for_filing(
     for term in spec.terms:
         if term.type == "phrase":
             count = _phrase_count_from_cache(
-                term.value.lower(), word_freq, bigram_freq, ticker, accession_number,
+                term.value.lower(), word_freq, ticker, accession_number,
             )
         else:  # lm_category
             cat_words = lm_words.get(term.value, frozenset())
@@ -403,6 +408,18 @@ def compute_signal_df(
         "Computing signal '%s' over %d %s filings (cached path) ...",
         hypothesis.signal_name, total, form_type,
     )
+
+    # Multi-word phrases can't be resolved from the in-memory unigram cache and
+    # fall back to a raw-text scan per filing — log this ONCE per hypothesis
+    # (not per filing) so the slow path is visible without flooding the log.
+    multiword_phrases = sorted({
+        term.value.lower()
+        for term in hypothesis.signal_computation.terms
+        if term.type == "phrase" and len(term.value.split()) >= 2
+    })
+    for phrase in multiword_phrases:
+        log.info("phrase '%s' is multi-word; using raw-text fallback for %d filings (slower)",
+                 phrase, total)
 
     # Pre-load LM word sets and the token cache once (expensive) before the loop
     needs_lm = any(t.type == "lm_category" for t in hypothesis.signal_computation.terms)

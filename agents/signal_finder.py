@@ -112,10 +112,73 @@ _OUTPUT_SCHEMA = """\
 }"""
 
 
-def _build_system_prompt(stats: dict) -> str:
-    cov        = stats["coverage"]
-    highlights = _grounding_highlights(stats)
-    stats_json = json.dumps(stats, separators=(",", ":"))
+def _render_prior_item(item: dict) -> str:
+    name      = item.get("signal_name", "?")
+    desc      = item.get("signal_description", "")
+    rationale = item.get("economic_rationale", "")
+    ic_mean   = item.get("ic_mean")
+    verdict   = item.get("verdict")
+    ic_is_number = isinstance(ic_mean, (int, float)) and not (isinstance(ic_mean, float) and ic_mean != ic_mean)
+    ic_str       = f"{ic_mean:+.4f}" if ic_is_number else "n/a"
+    return f"  - '{name}' (IC={ic_str}, verdict={verdict}): {desc} Rationale: {rationale}"
+
+
+def _build_prior_results_section(past_winners: list[dict] | None,
+                                 past_losers:  list[dict] | None) -> str:
+    """
+    Compact "PRIOR RESULTS" block summarising what worked and what didn't in
+    earlier research cycles, so the model can build on winners and steer away
+    from losers. Returns "" if there is nothing to report (cold start).
+    """
+    winners = (past_winners or [])[:5]
+    losers  = (past_losers  or [])[:10]
+    if not winners and not losers:
+        return ""
+
+    parts = ["\n=== PRIOR RESULTS — learn from past research cycles ==="]
+    if winners:
+        parts.append(
+            "\nThese past hypotheses were validated as CANDIDATEs with strong IC — "
+            "favor SIMILAR underlying themes and economic mechanisms (but propose "
+            "genuinely new specs, not copies):"
+        )
+        parts += [_render_prior_item(w) for w in winners]
+    if losers:
+        loser_names = ", ".join(f"'{l.get('signal_name', '?')}'" for l in losers)
+        parts.append(
+            "\nThese past hypotheses FAILED validation (insignificant IC, suspicious "
+            "decay, or no novel alpha after controlling for known factors). Each line "
+            "is [name] (stats): [description] Rationale: [rationale] — read the names "
+            "AND descriptions carefully:"
+        )
+        parts += [_render_prior_item(l) for l in losers]
+        parts.append(
+            "\n*** Your new proposals MUST be SUBSTANTIALLY DIFFERENT from every failure "
+            f"listed above ({loser_names}) — NOT minor rewordings, synonym swaps, or "
+            "variations on the same underlying theme. Swapping the LM category or phrase "
+            "on an otherwise-identical spec to one of these is NOT substantially "
+            "different and will be rejected as a near-duplicate before it ever reaches "
+            "the backtest. Concretely: do not propose new variants of supply chain, "
+            "litigation, restructuring, regulation, or uncertainty signals if those "
+            "names (or close synonyms) appear above — propose hypotheses on DIFFERENT "
+            "linguistic dimensions instead. Explore genuinely new angles: LM-category "
+            "combinations not yet tried together, ratios/contrasts between phrase "
+            "families that have never been paired (e.g. forward-looking vs. "
+            "backward-looking language, hedging/commitment language, growth/expansion "
+            "language, liquidity or workforce language), or structurally different "
+            "combine/normalize specs built on entirely new phrase sets. ***"
+        )
+    parts.append("")
+    return "\n".join(parts)
+
+
+def _build_system_prompt(stats: dict,
+                         past_winners: list[dict] | None = None,
+                         past_losers:  list[dict] | None = None) -> str:
+    cov           = stats["coverage"]
+    highlights    = _grounding_highlights(stats)
+    stats_json    = json.dumps(stats, separators=(",", ":"))
+    prior_results = _build_prior_results_section(past_winners, past_losers)
 
     return f"""You are an expert quantitative researcher whose job is to propose \
 TESTABLE, text-based alpha factors derived purely from the language of 10-K annual \
@@ -156,7 +219,7 @@ precise about the causal mechanism.
 estimates, macro data, or anything outside of phrase/LM word counts within the filing \
 text. If a signal cannot be computed purely from word/phrase counts, it is INVALID — \
 do not propose it.
-
+{prior_results}
 === OUTPUT FORMAT — FOLLOW EXACTLY ===
 Respond with ONLY a JSON array of hypothesis objects. No prose, no markdown code \
 fences, no commentary before or after the array. Each object must have EXACTLY these \
@@ -165,12 +228,15 @@ fields, matching this shape:
 """
 
 
-def _build_initial_user_prompt(n: int) -> str:
-    return (
+def _build_initial_user_prompt(n: int, extra_instruction: str | None = None) -> str:
+    base = (
         f"Propose exactly {n} DISTINCT factor hypotheses. Each must explore a "
         f"genuinely different economic mechanism — do not just swap the LM category "
         f"on an otherwise-identical spec. Output ONLY the JSON array, nothing else."
     )
+    if extra_instruction:
+        return f"{extra_instruction}\n\n{base}"
+    return base
 
 
 def _build_retry_user_prompt(n: int, n_valid: int, n_total: int, errors: list[str]) -> str:
@@ -244,11 +310,25 @@ def _invoke(llm: ChatGroq, messages: list) -> str:
 # Core entry point
 # ---------------------------------------------------------------------------
 
-def generate_hypotheses(n: int = 5, max_retries: int = 3) -> list[FactorHypothesis]:
+def generate_hypotheses(n: int = 3, max_retries: int = 3,
+                        past_winners: list[dict] | None = None,
+                        past_losers:  list[dict] | None = None,
+                        extra_instruction: str | None = None) -> list[FactorHypothesis]:
     """
     Ask the Groq-hosted LLM for *n* FactorHypothesis-shaped proposals,
     grounded in agents/feature_stats.json, and validate every one against the
     FactorHypothesis schema.
+
+    *past_winners* / *past_losers* (each a list of dicts with signal_name,
+    signal_description, economic_rationale, ic_mean, verdict) let the model
+    learn from prior research cycles: it's instructed to favor themes similar
+    to past CANDIDATEs and avoid patterns similar to past failures. Pass
+    None/[] (the default) for a cold start — the prompt is then identical to
+    the no-feedback version.
+
+    *extra_instruction*, if given, is prepended to the initial user prompt —
+    e.g. a one-off "your last batch was all duplicates, try harder" nudge from
+    a calling orchestration graph's retry path. Pass None for the normal prompt.
 
     On parse/validation failure, re-prompts (up to *max_retries* additional
     times) including the specific errors so the model can self-correct.
@@ -258,9 +338,13 @@ def generate_hypotheses(n: int = 5, max_retries: int = 3) -> list[FactorHypothes
     stats = _load_feature_stats()
     llm   = ChatGroq(model=GROQ_MODEL_SIGNAL, api_key=GROQ_API_KEY, temperature=0.7)
 
+    log.info("Signal Finder: generating with %d past winner(s), %d past loser(s) as context%s",
+             len(past_winners or []), len(past_losers or []),
+             "  (+ extra retry instruction)" if extra_instruction else "")
+
     messages: list = [
-        SystemMessage(content=_build_system_prompt(stats)),
-        HumanMessage(content=_build_initial_user_prompt(n)),
+        SystemMessage(content=_build_system_prompt(stats, past_winners, past_losers)),
+        HumanMessage(content=_build_initial_user_prompt(n, extra_instruction)),
     ]
 
     best_valid: list[FactorHypothesis] = []
