@@ -20,7 +20,9 @@
       "Bash(git check-ignore *)",
       "Bash(tee /tmp/report_writer_run.log)",
       "Bash(powershell *)",
-      "Read(//tmp/**)"
+      "Read(//tmp/**)",
+      "Bash(python orchestration/research_graph.py)",
+      "Bash(echo \"started, pid $!\")"
     ]
   }
 }
