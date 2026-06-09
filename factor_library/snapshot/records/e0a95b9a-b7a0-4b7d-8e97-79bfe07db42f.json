@@ -1,0 +1,47 @@
+{
+  "hypothesis": {
+    "signal_name": "demo_rejected_signal",
+    "signal_description": "Fake demo signal for 'demo_rejected_signal'.",
+    "signal_computation": {
+      "terms": [
+        {
+          "type": "phrase",
+          "value": "going concern"
+        }
+      ],
+      "combine": "sum",
+      "normalize_by_length": true
+    },
+    "direction": -1,
+    "horizon": "fwd_ret_21d",
+    "universe_filter": "all",
+    "economic_rationale": "Fabricated rationale used only to demonstrate store.py round-tripping."
+  },
+  "n_filings_used": 1435,
+  "ic_mean": -0.02,
+  "ic_t_stat": -0.39999999999999997,
+  "ic_p_value": 0.61,
+  "ic_by_year": [
+    {
+      "year": 2022,
+      "ic": -0.018000000000000002,
+      "n_obs": 146
+    },
+    {
+      "year": 2023,
+      "ic": -0.022000000000000002,
+      "n_obs": 146
+    }
+  ],
+  "total_return": -0.06,
+  "sharpe": -0.3,
+  "decay_shape": "SMOOTH",
+  "ff_alpha": -0.01,
+  "ff_alpha_pvalue": 0.4,
+  "ff_is_novel": false,
+  "verdict": "NOT_SIGNIFICANT",
+  "failed_gates": [
+    "NOT_SIGNIFICANT",
+    "NOT_NOVEL"
+  ]
+}

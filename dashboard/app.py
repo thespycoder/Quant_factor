@@ -23,7 +23,13 @@ import streamlit as st
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from factor_library.store import load_index, load_record, load_memo
-from agents.dedup_store import count as dedup_count, list_all as dedup_list_all
+try:
+    from agents.dedup_store import count as dedup_count, list_all as dedup_list_all
+    DEDUP_AVAILABLE = True
+    _DEDUP_ERR = ""
+except Exception as e:
+    DEDUP_AVAILABLE = False
+    _DEDUP_ERR = str(e)
 
 _CACHE_TTL = 60  # seconds — short enough that a fresh CLI run shows up promptly
 
@@ -59,6 +65,8 @@ def _load_memo_cached(factor_id: str) -> str | None:
 
 @st.cache_data(ttl=_CACHE_TTL)
 def _dedup_snapshot() -> tuple[int, list[dict]]:
+    if not DEDUP_AVAILABLE:
+        return 0, []
     return dedup_count(), dedup_list_all()
 
 
@@ -213,6 +221,13 @@ def _render_detail(filtered: pd.DataFrame) -> None:
 
 def _render_run_stats(dedup_total: int, dedup_entries: list[dict], n: int = 15) -> None:
     st.header("Run stats")
+
+    if not DEDUP_AVAILABLE:
+        st.info(
+            f"Dedup store unavailable in this environment (chromadb import failed): {_DEDUP_ERR}"
+        )
+        return
+
     st.caption(f"{dedup_total} hypothesis/hypotheses stored in the dedup vector store "
                "(see the metric in the header above for the running total).")
 

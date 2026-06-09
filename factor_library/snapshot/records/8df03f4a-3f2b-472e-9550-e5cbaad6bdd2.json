@@ -1,0 +1,87 @@
+{
+  "hypothesis": {
+    "signal_name": "restructuring_effort_intensity",
+    "signal_description": "Measures the relative frequency of restructuring language in a company's 10-K filing",
+    "signal_computation": {
+      "terms": [
+        {
+          "type": "phrase",
+          "value": "restructuring"
+        }
+      ],
+      "combine": "sum",
+      "normalize_by_length": true
+    },
+    "direction": 1,
+    "horizon": "fwd_ret_5d",
+    "universe_filter": "all",
+    "economic_rationale": "Companies undergoing restructuring efforts may be proactively addressing operational inefficiencies, which can lead to cost savings and improved profitability. Management's disclosure of restructuring plans can signal a positive outlook for the company's future performance."
+  },
+  "n_filings_used": 1435,
+  "ic_mean": -0.08023582661103137,
+  "ic_t_stat": -1.8030598706280325,
+  "ic_p_value": 0.07910936571242522,
+  "ic_by_year": [
+    {
+      "year": 2015,
+      "ic": 0.05096079476412635,
+      "n_obs": 130
+    },
+    {
+      "year": 2016,
+      "ic": 0.05809032608331066,
+      "n_obs": 133
+    },
+    {
+      "year": 2017,
+      "ic": 0.03462487470330471,
+      "n_obs": 133
+    },
+    {
+      "year": 2018,
+      "ic": 0.029924329457674252,
+      "n_obs": 136
+    },
+    {
+      "year": 2019,
+      "ic": 0.029707742937433848,
+      "n_obs": 139
+    },
+    {
+      "year": 2020,
+      "ic": 0.16688338162838412,
+      "n_obs": 141
+    },
+    {
+      "year": 2021,
+      "ic": 0.0384753489053628,
+      "n_obs": 144
+    },
+    {
+      "year": 2022,
+      "ic": -0.10383964919293855,
+      "n_obs": 146
+    },
+    {
+      "year": 2023,
+      "ic": -0.03272914625073039,
+      "n_obs": 146
+    },
+    {
+      "year": 2024,
+      "ic": -0.1009213422860265,
+      "n_obs": 147
+    }
+  ],
+  "total_return": -0.036672474292981705,
+  "sharpe": -0.19215411675425204,
+  "decay_shape": "SMOOTH",
+  "ff_alpha": -0.0008382269523414736,
+  "ff_alpha_pvalue": 0.840183710592232,
+  "ff_is_novel": false,
+  "verdict": "NOT_SIGNIFICANT",
+  "failed_gates": [
+    "NOT_SIGNIFICANT",
+    "NOT_NOVEL"
+  ]
+}

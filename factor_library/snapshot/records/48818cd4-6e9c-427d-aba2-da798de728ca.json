@@ -1,0 +1,91 @@
+{
+  "hypothesis": {
+    "signal_name": "hedging_language_intensity",
+    "signal_description": "Measures the density of hedging language in a company's 10-K filing",
+    "signal_computation": {
+      "terms": [
+        {
+          "type": "phrase",
+          "value": "may depend on"
+        },
+        {
+          "type": "phrase",
+          "value": "subject to risks"
+        }
+      ],
+      "combine": "sum",
+      "normalize_by_length": true
+    },
+    "direction": -1,
+    "horizon": "fwd_ret_63d",
+    "universe_filter": "all",
+    "economic_rationale": "Management's increased use of hedging language may indicate a higher level of uncertainty or risk, which can negatively impact future returns; as a result, higher hedging language intensity predicts lower forward returns as investors become more cautious about the company's prospects."
+  },
+  "n_filings_used": 1435,
+  "ic_mean": -0.07861620661885307,
+  "ic_t_stat": -1.3572522677936802,
+  "ic_p_value": 0.1827081535390237,
+  "ic_by_year": [
+    {
+      "year": 2015,
+      "ic": -0.13099828335474115,
+      "n_obs": 130
+    },
+    {
+      "year": 2016,
+      "ic": 0.07371161233091254,
+      "n_obs": 133
+    },
+    {
+      "year": 2017,
+      "ic": -0.07519522586381344,
+      "n_obs": 133
+    },
+    {
+      "year": 2018,
+      "ic": -0.15148228674076092,
+      "n_obs": 136
+    },
+    {
+      "year": 2019,
+      "ic": -0.1401431169359509,
+      "n_obs": 139
+    },
+    {
+      "year": 2020,
+      "ic": -0.24325381572093455,
+      "n_obs": 141
+    },
+    {
+      "year": 2021,
+      "ic": 0.13396239311763228,
+      "n_obs": 144
+    },
+    {
+      "year": 2022,
+      "ic": 0.06505664836618087,
+      "n_obs": 146
+    },
+    {
+      "year": 2023,
+      "ic": -0.19695002178703577,
+      "n_obs": 146
+    },
+    {
+      "year": 2024,
+      "ic": 0.11860736157288343,
+      "n_obs": 131
+    }
+  ],
+  "total_return": -0.6558799746338135,
+  "sharpe": -0.751155258937467,
+  "decay_shape": "SMOOTH",
+  "ff_alpha": -0.03377969915930528,
+  "ff_alpha_pvalue": 0.27603698788158687,
+  "ff_is_novel": false,
+  "verdict": "NOT_SIGNIFICANT",
+  "failed_gates": [
+    "NOT_SIGNIFICANT",
+    "NOT_NOVEL"
+  ]
+}

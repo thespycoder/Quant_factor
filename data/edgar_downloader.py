@@ -292,6 +292,12 @@ def run(
     Download all matching filings for every ticker and return the
     complete (updated) metadata index as a DataFrame.
     """
+    if not SEC_EDGAR_USER_AGENT:
+        raise EnvironmentError(
+            "SEC_EDGAR_USER_AGENT is not set. "
+            "Add it to .env: SEC_EDGAR_USER_AGENT=Your Name your@email.com"
+        )
+
     if tickers is None:
         tickers = get_universe()
     if form_types is None:

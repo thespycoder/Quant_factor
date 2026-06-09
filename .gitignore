@@ -37,9 +37,18 @@ data/prices/*
 chroma/
 chroma_db/
 
-# Factor library data (generated — index .parquet covered above)
+# Factor library — live data (generated; gitignored so the repo stays small)
+factor_library/factors_index.parquet
 factor_library/records/
 factor_library/memos/
+factor_library/chroma/
+
+# Factor library snapshot — tracked for Streamlit Cloud read-only deployment.
+# The dashboard reads from snapshot/ when the live factor_library/ root is absent.
+# Override *.parquet above for the snapshot index only; records/ and memos/ under
+# snapshot/ are plain JSON/Markdown so they are tracked without extra rules.
+!factor_library/snapshot/
+!factor_library/snapshot/factors_index.parquet
 
 # Jupyter
 .ipynb_checkpoints/

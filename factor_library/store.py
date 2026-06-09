@@ -41,6 +41,23 @@ INDEX_PATH          = _FACTOR_LIBRARY_DIR / "factors_index.parquet"
 RECORDS_DIR         = _FACTOR_LIBRARY_DIR / "records"
 MEMOS_DIR           = _FACTOR_LIBRARY_DIR / "memos"
 
+# Snapshot layout (tracked by Git; used by Streamlit Cloud where the live
+# factor_library/ root is gitignored and therefore absent).
+_SNAPSHOT_DIR = _FACTOR_LIBRARY_DIR / "snapshot"
+
+
+def _snapshot_or(live: Path) -> Path:
+    """Return the snapshot-copy of *live* if the snapshot exists, else *live*.
+
+    Reads prefer snapshot/ so the dashboard works on Streamlit Cloud without
+    a local data pull.  Writes are never redirected — they always target the
+    live paths so local development is unaffected.
+    """
+    if not _SNAPSHOT_DIR.exists():
+        return live
+    snap = _SNAPSHOT_DIR / live.relative_to(_FACTOR_LIBRARY_DIR)
+    return snap if snap.exists() else live
+
 _INDEX_COLUMNS = [
     "factor_id", "signal_name", "verdict", "ic_mean", "ic_p_value",
     "sharpe", "decay_shape", "ff_is_novel", "evaluated_at", "is_candidate",
@@ -87,9 +104,10 @@ def _to_jsonable(obj):
 
 def load_index() -> pd.DataFrame:
     """Load the factor index; returns an empty (correctly-columned) DataFrame if missing."""
-    if not INDEX_PATH.exists():
+    path = _snapshot_or(INDEX_PATH)
+    if not path.exists():
         return pd.DataFrame(columns=_INDEX_COLUMNS)
-    return pd.read_parquet(INDEX_PATH)
+    return pd.read_parquet(path)
 
 
 def _save_index(df: pd.DataFrame) -> None:
@@ -158,7 +176,7 @@ def save_factor(verdict_dict: dict, memo_md: str | None = None) -> str:
 
 def load_record(factor_id: str) -> dict:
     """Load the full verdict dict for *factor_id* from its JSON record."""
-    path = RECORDS_DIR / f"{factor_id}.json"
+    path = _snapshot_or(RECORDS_DIR / f"{factor_id}.json")
     if not path.exists():
         raise FileNotFoundError(f"No record found for factor_id={factor_id!r} at {path}")
     return json.loads(path.read_text(encoding="utf-8"))
@@ -166,7 +184,7 @@ def load_record(factor_id: str) -> dict:
 
 def load_memo(factor_id: str) -> str | None:
     """Load the markdown memo for *factor_id*, or None if it has none."""
-    path = MEMOS_DIR / f"{factor_id}.md"
+    path = _snapshot_or(MEMOS_DIR / f"{factor_id}.md")
     if not path.exists():
         return None
     return path.read_text(encoding="utf-8")

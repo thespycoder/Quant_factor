@@ -1,0 +1,87 @@
+{
+  "hypothesis": {
+    "signal_name": "restructuring_risk",
+    "signal_description": "Measures the frequency of restructuring-related language in 10-K filings",
+    "signal_computation": {
+      "terms": [
+        {
+          "type": "phrase",
+          "value": "restructuring"
+        }
+      ],
+      "combine": "sum",
+      "normalize_by_length": true
+    },
+    "direction": -1,
+    "horizon": "fwd_ret_21d",
+    "universe_filter": "all",
+    "economic_rationale": "Management's discussion of restructuring efforts may indicate financial distress or operational challenges, which can negatively impact future returns; as such, an increase in restructuring-related language may signal a higher likelihood of poor performance."
+  },
+  "n_filings_used": 1435,
+  "ic_mean": 0.06812903440172728,
+  "ic_t_stat": 1.453959585820634,
+  "ic_p_value": 0.15395831019603295,
+  "ic_by_year": [
+    {
+      "year": 2015,
+      "ic": 0.056444963091018555,
+      "n_obs": 130
+    },
+    {
+      "year": 2016,
+      "ic": 0.038869090158829785,
+      "n_obs": 133
+    },
+    {
+      "year": 2017,
+      "ic": -0.19892350199081557,
+      "n_obs": 133
+    },
+    {
+      "year": 2018,
+      "ic": 0.09874450379989676,
+      "n_obs": 136
+    },
+    {
+      "year": 2019,
+      "ic": -0.1281333508360612,
+      "n_obs": 139
+    },
+    {
+      "year": 2020,
+      "ic": -0.15486014516885196,
+      "n_obs": 141
+    },
+    {
+      "year": 2021,
+      "ic": 0.04768886819713046,
+      "n_obs": 144
+    },
+    {
+      "year": 2022,
+      "ic": 0.33114150003607473,
+      "n_obs": 146
+    },
+    {
+      "year": 2023,
+      "ic": -0.12469789199049618,
+      "n_obs": 146
+    },
+    {
+      "year": 2024,
+      "ic": 0.018499716728822,
+      "n_obs": 147
+    }
+  ],
+  "total_return": 0.18481666239101746,
+  "sharpe": 0.4190215545999404,
+  "decay_shape": "SMOOTH",
+  "ff_alpha": 0.010448396087991993,
+  "ff_alpha_pvalue": 0.24946686511235278,
+  "ff_is_novel": false,
+  "verdict": "NOT_SIGNIFICANT",
+  "failed_gates": [
+    "NOT_SIGNIFICANT",
+    "NOT_NOVEL"
+  ]
+}

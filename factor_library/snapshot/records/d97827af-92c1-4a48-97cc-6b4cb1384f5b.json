@@ -1,0 +1,86 @@
+{
+  "hypothesis": {
+    "signal_name": "regulatory_headwind_index",
+    "signal_description": "Captures the relative frequency of regulation language in a company's 10-K filing",
+    "signal_computation": {
+      "terms": [
+        {
+          "type": "phrase",
+          "value": "regulation"
+        }
+      ],
+      "combine": "sum",
+      "normalize_by_length": true
+    },
+    "direction": -1,
+    "horizon": "fwd_ret_21d",
+    "universe_filter": "all",
+    "economic_rationale": "Companies facing increasing regulatory scrutiny may be subject to stricter compliance requirements, fines, or even operational restrictions. The relative frequency of regulation language can indicate a higher likelihood of regulatory headwinds, ultimately resulting in negative forward returns."
+  },
+  "n_filings_used": 1435,
+  "ic_mean": 0.1487659408034206,
+  "ic_t_stat": 2.7103000592471655,
+  "ic_p_value": 0.009939841466346133,
+  "ic_by_year": [
+    {
+      "year": 2015,
+      "ic": 0.043400838465635194,
+      "n_obs": 130
+    },
+    {
+      "year": 2016,
+      "ic": -0.003514557485844521,
+      "n_obs": 133
+    },
+    {
+      "year": 2017,
+      "ic": 0.10388348400285428,
+      "n_obs": 133
+    },
+    {
+      "year": 2018,
+      "ic": 0.09375756614381715,
+      "n_obs": 136
+    },
+    {
+      "year": 2019,
+      "ic": 0.14555403006625783,
+      "n_obs": 139
+    },
+    {
+      "year": 2020,
+      "ic": 0.18542551631663975,
+      "n_obs": 141
+    },
+    {
+      "year": 2021,
+      "ic": -0.003100638112530816,
+      "n_obs": 144
+    },
+    {
+      "year": 2022,
+      "ic": 0.021474382765747754,
+      "n_obs": 146
+    },
+    {
+      "year": 2023,
+      "ic": 0.1198771074558388,
+      "n_obs": 146
+    },
+    {
+      "year": 2024,
+      "ic": -0.00016622732909524023,
+      "n_obs": 147
+    }
+  ],
+  "total_return": 0.4350465921289448,
+  "sharpe": 0.7107813106954535,
+  "decay_shape": "SPIKE",
+  "ff_alpha": 0.034668090368409524,
+  "ff_alpha_pvalue": 0.0010408540561353157,
+  "ff_is_novel": true,
+  "verdict": "SUSPICIOUS_DECAY",
+  "failed_gates": [
+    "SUSPICIOUS_DECAY"
+  ]
+}

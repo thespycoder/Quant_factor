@@ -24,7 +24,11 @@ import uuid
 import logging
 from pathlib import Path
 
-import chromadb
+try:
+    import chromadb
+    CHROMA_AVAILABLE = True
+except Exception:
+    CHROMA_AVAILABLE = False
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from agents.hypothesis_schema import FactorHypothesis
@@ -75,6 +79,11 @@ def _get_collection():
     its built-in local default (a small sentence-transformer that downloads
     on first use — no API key required).
     """
+    if not CHROMA_AVAILABLE:
+        raise RuntimeError(
+            "chromadb is not available in this environment — "
+            "dedup store operations cannot be performed."
+        )
     global _client, _collection
     if _collection is not None:
         return _collection
@@ -226,7 +235,9 @@ def add_if_new(hypothesis: FactorHypothesis, threshold: float = _DEFAULT_THRESHO
 
 
 def count() -> int:
-    """How many hypotheses are currently stored."""
+    """How many hypotheses are currently stored.  Returns 0 if chromadb is unavailable."""
+    if not CHROMA_AVAILABLE:
+        return 0
     return _get_collection().count()
 
 
@@ -234,7 +245,10 @@ def list_all() -> list[dict]:
     """
     Return every stored hypothesis as ``{"id", "signal_name", "metadata"}`` —
     useful for quick inspection of the dedup store's contents.
+    Returns an empty list if chromadb is unavailable.
     """
+    if not CHROMA_AVAILABLE:
+        return []
     collection = _get_collection()
     if collection.count() == 0:
         return []

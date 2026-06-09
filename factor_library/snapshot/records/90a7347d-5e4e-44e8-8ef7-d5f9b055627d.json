@@ -1,0 +1,91 @@
+{
+  "hypothesis": {
+    "signal_name": "growth_sentiment",
+    "signal_description": "Measures the relative frequency of growth and positive language",
+    "signal_computation": {
+      "terms": [
+        {
+          "type": "phrase",
+          "value": "growth"
+        },
+        {
+          "type": "lm_category",
+          "value": "LM_positive"
+        }
+      ],
+      "combine": "ratio",
+      "normalize_by_length": true
+    },
+    "direction": 1,
+    "horizon": "fwd_ret_63d",
+    "universe_filter": "all",
+    "economic_rationale": "Companies with strong growth prospects may experience increased investor confidence and positive returns; a higher ratio of growth to positive language may indicate a company's ability to effectively communicate its growth strategy and prospects, leading to increased investor optimism and positive returns."
+  },
+  "n_filings_used": 1435,
+  "ic_mean": -0.05660065505786955,
+  "ic_t_stat": -0.9926206496887711,
+  "ic_p_value": 0.3271737859579168,
+  "ic_by_year": [
+    {
+      "year": 2015,
+      "ic": 0.05661964522252113,
+      "n_obs": 130
+    },
+    {
+      "year": 2016,
+      "ic": -0.2027935376012116,
+      "n_obs": 133
+    },
+    {
+      "year": 2017,
+      "ic": 0.10260314448333763,
+      "n_obs": 133
+    },
+    {
+      "year": 2018,
+      "ic": 0.01882307478541817,
+      "n_obs": 136
+    },
+    {
+      "year": 2019,
+      "ic": 0.10524834135618229,
+      "n_obs": 139
+    },
+    {
+      "year": 2020,
+      "ic": 0.3821807249678169,
+      "n_obs": 141
+    },
+    {
+      "year": 2021,
+      "ic": -0.21616853163797145,
+      "n_obs": 144
+    },
+    {
+      "year": 2022,
+      "ic": -0.18720386685428658,
+      "n_obs": 146
+    },
+    {
+      "year": 2023,
+      "ic": 0.1630572364216932,
+      "n_obs": 146
+    },
+    {
+      "year": 2024,
+      "ic": -0.11225392656542126,
+      "n_obs": 131
+    }
+  ],
+  "total_return": 0.1189719876027473,
+  "sharpe": 0.20280857229052496,
+  "decay_shape": "SMOOTH",
+  "ff_alpha": 0.006937221227820515,
+  "ff_alpha_pvalue": 0.7814828438409894,
+  "ff_is_novel": false,
+  "verdict": "NOT_SIGNIFICANT",
+  "failed_gates": [
+    "NOT_SIGNIFICANT",
+    "NOT_NOVEL"
+  ]
+}

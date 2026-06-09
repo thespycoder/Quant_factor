@@ -1,0 +1,91 @@
+{
+  "hypothesis": {
+    "signal_name": "workforce_commitment_index",
+    "signal_description": "Measures the relative frequency of phrases indicating workforce investment and commitment",
+    "signal_computation": {
+      "terms": [
+        {
+          "type": "phrase",
+          "value": "employee development"
+        },
+        {
+          "type": "phrase",
+          "value": "workforce expansion"
+        }
+      ],
+      "combine": "mean",
+      "normalize_by_length": true
+    },
+    "direction": 1,
+    "horizon": "fwd_ret_21d",
+    "universe_filter": "all",
+    "economic_rationale": "Companies that invest in their workforce are more likely to experience increased productivity and retention, leading to improved financial performance; this signal captures management's commitment to human capital, which can predict positive returns as investors recognize the value of a skilled and dedicated workforce."
+  },
+  "n_filings_used": 1435,
+  "ic_mean": -0.04859264865088521,
+  "ic_t_stat": -1.1062066654212697,
+  "ic_p_value": 0.27772954219425233,
+  "ic_by_year": [
+    {
+      "year": 2015,
+      "ic": -0.0774638348497418,
+      "n_obs": 130
+    },
+    {
+      "year": 2016,
+      "ic": -0.021805148801394662,
+      "n_obs": 133
+    },
+    {
+      "year": 2017,
+      "ic": -0.0327147191256385,
+      "n_obs": 133
+    },
+    {
+      "year": 2018,
+      "ic": -0.1409737995028759,
+      "n_obs": 136
+    },
+    {
+      "year": 2019,
+      "ic": -0.05852351037915877,
+      "n_obs": 139
+    },
+    {
+      "year": 2020,
+      "ic": 0.00025080782665308336,
+      "n_obs": 141
+    },
+    {
+      "year": 2021,
+      "ic": 0.004331140607754045,
+      "n_obs": 144
+    },
+    {
+      "year": 2022,
+      "ic": -0.04978865974459421,
+      "n_obs": 146
+    },
+    {
+      "year": 2023,
+      "ic": 0.027435674220798945,
+      "n_obs": 146
+    },
+    {
+      "year": 2024,
+      "ic": -0.049974076855249,
+      "n_obs": 147
+    }
+  ],
+  "total_return": -0.4017899365659956,
+  "sharpe": -0.6766922940758328,
+  "decay_shape": "SMOOTH",
+  "ff_alpha": -0.005908790693012063,
+  "ff_alpha_pvalue": 0.703346007463282,
+  "ff_is_novel": false,
+  "verdict": "NOT_SIGNIFICANT",
+  "failed_gates": [
+    "NOT_SIGNIFICANT",
+    "NOT_NOVEL"
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "hypothesis": {
+    "signal_name": "demo_candidate_signal",
+    "signal_description": "Fake demo signal for 'demo_candidate_signal'.",
+    "signal_computation": {
+      "terms": [
+        {
+          "type": "phrase",
+          "value": "going concern"
+        }
+      ],
+      "combine": "sum",
+      "normalize_by_length": true
+    },
+    "direction": -1,
+    "horizon": "fwd_ret_21d",
+    "universe_filter": "all",
+    "economic_rationale": "Fabricated rationale used only to demonstrate store.py round-tripping."
+  },
+  "n_filings_used": 1435,
+  "ic_mean": 0.12,
+  "ic_t_stat": 2.4,
+  "ic_p_value": 0.018,
+  "ic_by_year": [
+    {
+      "year": 2022,
+      "ic": 0.108,
+      "n_obs": 146
+    },
+    {
+      "year": 2023,
+      "ic": 0.132,
+      "n_obs": 146
+    }
+  ],
+  "total_return": 0.21000000000000002,
+  "sharpe": 1.05,
+  "decay_shape": "MONOTONIC_DECAY",
+  "ff_alpha": 0.02,
+  "ff_alpha_pvalue": 0.01,
+  "ff_is_novel": true,
+  "verdict": "CANDIDATE",
+  "failed_gates": []
+}

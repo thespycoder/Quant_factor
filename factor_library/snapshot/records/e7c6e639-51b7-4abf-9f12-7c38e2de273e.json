@@ -1,0 +1,91 @@
+{
+  "hypothesis": {
+    "signal_name": "uncertainty_sentiment_ratio",
+    "signal_description": "Measures the ratio of uncertainty language to positive language in a company's 10-K filing",
+    "signal_computation": {
+      "terms": [
+        {
+          "type": "lm_category",
+          "value": "LM_uncertainty"
+        },
+        {
+          "type": "lm_category",
+          "value": "LM_positive"
+        }
+      ],
+      "combine": "ratio",
+      "normalize_by_length": true
+    },
+    "direction": -1,
+    "horizon": "fwd_ret_63d",
+    "universe_filter": "all",
+    "economic_rationale": "Companies with increasing uncertainty language relative to positive language may be experiencing declining sentiment among management and investors. This shift in sentiment can be a leading indicator of decreased future performance, as uncertainty can lead to decreased investment and operational inefficiencies."
+  },
+  "n_filings_used": 1435,
+  "ic_mean": -0.022640434195149956,
+  "ic_t_stat": -0.47314320957820943,
+  "ic_p_value": 0.638817725236286,
+  "ic_by_year": [
+    {
+      "year": 2015,
+      "ic": 0.020983490147345997,
+      "n_obs": 130
+    },
+    {
+      "year": 2016,
+      "ic": 0.19960544118807252,
+      "n_obs": 133
+    },
+    {
+      "year": 2017,
+      "ic": -0.04259551855666862,
+      "n_obs": 133
+    },
+    {
+      "year": 2018,
+      "ic": -0.0695697599945154,
+      "n_obs": 136
+    },
+    {
+      "year": 2019,
+      "ic": -0.08423308038018615,
+      "n_obs": 139
+    },
+    {
+      "year": 2020,
+      "ic": 0.028697748938058446,
+      "n_obs": 141
+    },
+    {
+      "year": 2021,
+      "ic": 0.1218231269825458,
+      "n_obs": 144
+    },
+    {
+      "year": 2022,
+      "ic": 0.12188611327752213,
+      "n_obs": 146
+    },
+    {
+      "year": 2023,
+      "ic": -0.18834140373988464,
+      "n_obs": 146
+    },
+    {
+      "year": 2024,
+      "ic": 0.13441805159096418,
+      "n_obs": 131
+    }
+  ],
+  "total_return": -0.4237287481116968,
+  "sharpe": -0.6854585684343826,
+  "decay_shape": "SMOOTH",
+  "ff_alpha": -0.028991035884365038,
+  "ff_alpha_pvalue": 0.15073557132418441,
+  "ff_is_novel": false,
+  "verdict": "NOT_SIGNIFICANT",
+  "failed_gates": [
+    "NOT_SIGNIFICANT",
+    "NOT_NOVEL"
+  ]
+}

@@ -1,0 +1,91 @@
+{
+  "hypothesis": {
+    "signal_name": "litigation_sentiment",
+    "signal_description": "Captures the relative frequency of litigious language versus positive sentiment in 10-K filings",
+    "signal_computation": {
+      "terms": [
+        {
+          "type": "lm_category",
+          "value": "LM_litigious"
+        },
+        {
+          "type": "lm_category",
+          "value": "LM_positive"
+        }
+      ],
+      "combine": "ratio",
+      "normalize_by_length": true
+    },
+    "direction": -1,
+    "horizon": "fwd_ret_63d",
+    "universe_filter": "all",
+    "economic_rationale": "A higher ratio of litigious to positive language may indicate that management is preparing for or responding to legal challenges, which can lead to increased costs, reputational damage, and decreased investor confidence, ultimately negatively impacting future returns."
+  },
+  "n_filings_used": 1435,
+  "ic_mean": -0.036423908920725626,
+  "ic_t_stat": -0.7324020855197955,
+  "ic_p_value": 0.46841682499906456,
+  "ic_by_year": [
+    {
+      "year": 2015,
+      "ic": -0.06823799314479236,
+      "n_obs": 130
+    },
+    {
+      "year": 2016,
+      "ic": 0.08678253484277626,
+      "n_obs": 133
+    },
+    {
+      "year": 2017,
+      "ic": -0.026884579432719234,
+      "n_obs": 133
+    },
+    {
+      "year": 2018,
+      "ic": -0.1819452577946738,
+      "n_obs": 136
+    },
+    {
+      "year": 2019,
+      "ic": -0.06679260332526099,
+      "n_obs": 139
+    },
+    {
+      "year": 2020,
+      "ic": -0.33303045189287855,
+      "n_obs": 141
+    },
+    {
+      "year": 2021,
+      "ic": 0.15071552800780055,
+      "n_obs": 144
+    },
+    {
+      "year": 2022,
+      "ic": 0.1324594222277251,
+      "n_obs": 146
+    },
+    {
+      "year": 2023,
+      "ic": -0.21214870113541826,
+      "n_obs": 146
+    },
+    {
+      "year": 2024,
+      "ic": 0.1048658848902403,
+      "n_obs": 131
+    }
+  ],
+  "total_return": -0.48001065821327904,
+  "sharpe": -0.8189716613901182,
+  "decay_shape": "SMOOTH",
+  "ff_alpha": -0.023820294783456115,
+  "ff_alpha_pvalue": 0.09623340888606542,
+  "ff_is_novel": false,
+  "verdict": "NOT_SIGNIFICANT",
+  "failed_gates": [
+    "NOT_SIGNIFICANT",
+    "NOT_NOVEL"
+  ]
+}

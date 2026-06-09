@@ -1,0 +1,91 @@
+{
+  "hypothesis": {
+    "signal_name": "supply_chain_resilience",
+    "signal_description": "Measures the co-occurrence of supply chain and positive language",
+    "signal_computation": {
+      "terms": [
+        {
+          "type": "phrase",
+          "value": "supply chain"
+        },
+        {
+          "type": "lm_category",
+          "value": "LM_positive"
+        }
+      ],
+      "combine": "mean",
+      "normalize_by_length": true
+    },
+    "direction": 1,
+    "horizon": "fwd_ret_5d",
+    "universe_filter": "all",
+    "economic_rationale": "Companies with resilient supply chains may be better equipped to manage disruptions and maintain operations, leading to positive returns; the co-occurrence of supply chain and positive language may indicate a company's ability to effectively manage its supply chain and mitigate potential risks."
+  },
+  "n_filings_used": 1435,
+  "ic_mean": -0.006026092681779149,
+  "ic_t_stat": -0.10375353179633827,
+  "ic_p_value": 0.9178966628682548,
+  "ic_by_year": [
+    {
+      "year": 2015,
+      "ic": 0.0901200344125961,
+      "n_obs": 130
+    },
+    {
+      "year": 2016,
+      "ic": -0.028093505592581572,
+      "n_obs": 133
+    },
+    {
+      "year": 2017,
+      "ic": 0.07342568611028877,
+      "n_obs": 133
+    },
+    {
+      "year": 2018,
+      "ic": 0.03492681041795626,
+      "n_obs": 136
+    },
+    {
+      "year": 2019,
+      "ic": -6.47929585694119e-05,
+      "n_obs": 139
+    },
+    {
+      "year": 2020,
+      "ic": 0.2202451092140364,
+      "n_obs": 141
+    },
+    {
+      "year": 2021,
+      "ic": -0.07581592699136433,
+      "n_obs": 144
+    },
+    {
+      "year": 2022,
+      "ic": -0.05252142762809612,
+      "n_obs": 146
+    },
+    {
+      "year": 2023,
+      "ic": -0.09559551501986936,
+      "n_obs": 146
+    },
+    {
+      "year": 2024,
+      "ic": 0.0773674880123051,
+      "n_obs": 147
+    }
+  ],
+  "total_return": 0.02178812941032704,
+  "sharpe": 0.10673775817610527,
+  "decay_shape": "MONOTONIC_BUILD",
+  "ff_alpha": 0.00040986267619595685,
+  "ff_alpha_pvalue": 0.9480167404918585,
+  "ff_is_novel": false,
+  "verdict": "NOT_SIGNIFICANT",
+  "failed_gates": [
+    "NOT_SIGNIFICANT",
+    "NOT_NOVEL"
+  ]
+}

@@ -26,7 +26,8 @@
       "Bash(curl -s http://localhost:8765)",
       "Bash(pkill -f \"streamlit run dashboard/app.py\")",
       "Bash(pkill -f \"streamlit.web.cli\")",
-      "Bash(Get-ChildItem \"D:\\\\Quant_factor\\\\config\\\\\" -File *)"
+      "Bash(Get-ChildItem \"D:\\\\Quant_factor\\\\config\\\\\" -File *)",
+      "Bash(echo \"exit: $?\")"
     ]
   }
 }

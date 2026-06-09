@@ -1,0 +1,87 @@
+{
+  "hypothesis": {
+    "signal_name": "litigious_language_intensity",
+    "signal_description": "Measures the relative frequency of litigious language in a company's 10-K filing",
+    "signal_computation": {
+      "terms": [
+        {
+          "type": "phrase",
+          "value": "litigation"
+        }
+      ],
+      "combine": "sum",
+      "normalize_by_length": true
+    },
+    "direction": -1,
+    "horizon": "fwd_ret_21d",
+    "universe_filter": "all",
+    "economic_rationale": "Companies with increasing litigious language may be facing escalating legal issues, which can lead to financial losses and decreased investor confidence, ultimately resulting in negative forward returns. Management's disclosure of ongoing litigation can serve as a warning sign for investors."
+  },
+  "n_filings_used": 1435,
+  "ic_mean": -0.018824528917952058,
+  "ic_t_stat": -0.32276893873964607,
+  "ic_p_value": 0.748594372755786,
+  "ic_by_year": [
+    {
+      "year": 2015,
+      "ic": -0.07550833686107962,
+      "n_obs": 130
+    },
+    {
+      "year": 2016,
+      "ic": 0.137445212563252,
+      "n_obs": 133
+    },
+    {
+      "year": 2017,
+      "ic": -0.23923220436482606,
+      "n_obs": 133
+    },
+    {
+      "year": 2018,
+      "ic": -0.004963986646617059,
+      "n_obs": 136
+    },
+    {
+      "year": 2019,
+      "ic": -0.09307620210493553,
+      "n_obs": 139
+    },
+    {
+      "year": 2020,
+      "ic": -0.163733639853726,
+      "n_obs": 141
+    },
+    {
+      "year": 2021,
+      "ic": 0.18198515190222178,
+      "n_obs": 144
+    },
+    {
+      "year": 2022,
+      "ic": 0.24354857523516396,
+      "n_obs": 146
+    },
+    {
+      "year": 2023,
+      "ic": -0.11826527552980493,
+      "n_obs": 146
+    },
+    {
+      "year": 2024,
+      "ic": 0.05872358189673668,
+      "n_obs": 147
+    }
+  ],
+  "total_return": -0.13589651688652116,
+  "sharpe": -0.21505280912664768,
+  "decay_shape": "SMOOTH",
+  "ff_alpha": 0.0030054093204293364,
+  "ff_alpha_pvalue": 0.8039319396887976,
+  "ff_is_novel": false,
+  "verdict": "NOT_SIGNIFICANT",
+  "failed_gates": [
+    "NOT_SIGNIFICANT",
+    "NOT_NOVEL"
+  ]
+}
