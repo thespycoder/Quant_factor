@@ -8,13 +8,14 @@
 
 1. [Why this project](#why-this-project)
 2. [Architecture](#architecture)
-3. [Methodology highlights](#methodology-highlights)
-4. [Limitations (honest)](#limitations-honest)
-5. [Results so far](#results-so-far)
-6. [Tech stack](#tech-stack)
-7. [How to run](#how-to-run)
-8. [Project structure](#project-structure)
-9. [Roadmap / future work](#roadmap--future-work)
+3. [Dashboard](#dashboard)
+4. [Methodology highlights](#methodology-highlights)
+5. [Limitations (honest)](#limitations-honest)
+6. [Results so far](#results-so-far)
+7. [Tech stack](#tech-stack)
+8. [How to run](#how-to-run)
+9. [Project structure](#project-structure)
+10. [Roadmap / future work](#roadmap--future-work)
 
 ---
 
@@ -50,6 +51,17 @@ The research cycle is a single linear [LangGraph](https://github.com/langchain-a
 | `summary` | Prints a run summary: hypotheses generated → survived dedup → evaluated → CANDIDATEs → factors saved. | (in-graph) |
 
 **The LLM touches exactly two nodes** — `generate` (Signal Finder, `agents/signal_finder.py`) and `report` (Report Writer, `agents/report_writer.py`) — both via Groq / `langchain-groq`. Every other node, including the entire backtest and validation suite, is deterministic Python with no model calls. Per-hypothesis failures are caught and logged so one bad proposal can't crash a run; when a node drops an item it drops it from every parallel list (`hypotheses` / `evaluated` / `memos`) so downstream nodes stay aligned by index.
+
+## Dashboard
+
+![Factor library browser](docs/screenshots/dashboard_overview.png)
+*Factor library browser with verdict and decay filters*
+
+![Per-factor research memo](docs/screenshots/factor_detail.png)
+*Per-factor research memo (numbers from engine, narrative from LLM)*
+
+![IC by year chart](docs/screenshots/ic_by_year_chart.png)
+*Yearly Information Coefficient breakdown*
 
 ## Methodology highlights
 
