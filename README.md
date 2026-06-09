@@ -16,8 +16,10 @@
 6. [Results so far](#results-so-far)
 7. [Tech stack](#tech-stack)
 8. [How to run](#how-to-run)
-9. [Project structure](#project-structure)
-10. [Roadmap / future work](#roadmap--future-work)
+9. [Production: Daily Refresh](#production-daily-refresh)
+10. [Production Deployment](#production-deployment)
+11. [Project structure](#project-structure)
+12. [Roadmap / future work](#roadmap--future-work)
 
 ---
 
@@ -99,6 +101,8 @@ The research cycle is a single linear [LangGraph](https://github.com/langchain-a
 - **Small effective sample.** With quarterly rebalancing over 2015–2024, the IC significance test runs on roughly 22–40 periods per factor — enough to catch a strong, consistent edge, but limited statistical power against a moderate one. Marginal results should be treated as inconclusive rather than negative.
 - **Open-source LLM via Groq.** `llama-3.3-70b-versatile` (Signal Finder) and `llama-3.1-8b-instant` (Report Writer) are fast and free to run at scale, but meaningfully weaker than frontier models at strict structured-output tasks — hence the schema-validation retry loop in `agents/signal_finder.py` and the code-only-numbers constraint in the Report Writer, both of which exist specifically to compensate for that gap.
 - **EDGAR/Yahoo resolution gaps.** Of the 150 universe tickers, a handful (e.g. `SNDK`, `PSKY`, `GEV`) failed to resolve due to recent ticker changes or spinoffs and were excluded; others are recent IPOs/spinoffs with partial history, handled by the ≥ 252-day eligibility rule rather than silently included with thin data.
+- **Data window is a 2015–2024 snapshot; incremental refresh exists but is not currently scheduled.** `scripts/daily_refresh.py` can pull new prices and filings incrementally, but no automated scheduler triggers it — so the data does not advance in real time.
+- **No always-on infrastructure; runs are manually triggered.** There is no production scheduler, cloud job, or daemon. Every research cycle and data refresh is initiated by hand.
 
 ## Results so far
 
@@ -199,6 +203,28 @@ python scripts/daily_refresh.py --run-research
 ```
 
 The existing caching logic in the loaders means re-runs are inexpensive: only data not already on disk is fetched. In a real deployment this command would be scheduled via cron, Windows Task Scheduler, or a GitHub Actions `schedule:` workflow.
+
+## Production Deployment
+
+### Current state
+
+- **Manual entry point.** The system runs via `python scripts/daily_refresh.py --run-research`. There is no always-on scheduler; each run is triggered by hand.
+- **2015–2024 historical snapshot.** The data layer covers this window. The refresh script supports incremental updates — it skips already-cached prices and filings — so daily reruns are inexpensive after the initial pull, but the scheduler that would trigger them nightly is not wired up.
+- **Dashboard reads from a Git-tracked snapshot.** The factor library is published at `factor_library/snapshot/`, committed to the repo. The deployed Streamlit app reads from this snapshot, so no live database connection is required.
+
+### What a production deployment would look like
+
+Automation is not currently wired up. The production-shaped architecture is:
+
+- A scheduled job (cron, Windows Task Scheduler, GitHub Actions `schedule:`, or a cloud VM timer) triggers `scripts/daily_refresh.py --run-research` nightly.
+- The script pulls only new filings and price bars since the last run; the existing caching layer handles deduplication.
+- The research graph runs on the freshened data, validates each hypothesis through the three-gate suite, and persists results to the factor library.
+- The library snapshot is published — e.g. committed back to the repo or written to object storage — which auto-triggers a Streamlit Cloud redeploy with the latest factors.
+- `GROQ_API_KEY` and `SEC_EDGAR_USER_AGENT` are stored as encrypted secrets in the scheduler environment, never in code.
+
+### Why it isn't wired up
+
+Scheduling is documented but not deployed for this portfolio version, since automated runs add operational cost without changing the engineering design that's being demonstrated. The script and the data layer are production-shaped; only the scheduler is absent.
 
 ## Project structure
 
