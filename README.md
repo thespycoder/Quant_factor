@@ -188,6 +188,16 @@ python orchestration/research_graph.py
 streamlit run dashboard/app.py
 ```
 
+## Production: Daily Refresh
+
+Once the initial data pull (steps 4–5 above) is complete, use the incremental refresh script as the nightly entry point — it pulls any new prices and filings, tokenizes new filings if any arrived, and optionally triggers a research cycle:
+
+```powershell
+python scripts/daily_refresh.py --run-research
+```
+
+The existing caching logic in the loaders means re-runs are inexpensive: only data not already on disk is fetched. In a real deployment this command would be scheduled via cron, Windows Task Scheduler, or a GitHub Actions `schedule:` workflow.
+
 ## Project structure
 
 ```
