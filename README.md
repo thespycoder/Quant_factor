@@ -2,6 +2,8 @@
 
 **An autonomous LLM-orchestrated pipeline that discovers, backtests, and rigorously validates quantitative equity factors from SEC filings — built for IB Quant Research / Quantitative Data Science roles.**
 
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://quantfactor-aryanbaheti.streamlit.app/)
+
 ---
 
 ## Table of contents
